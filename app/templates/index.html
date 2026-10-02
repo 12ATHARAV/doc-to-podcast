@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Transform any document, PDF, DOCX, or book into an engaging two-host podcast conversation instantly. Powered by Gemini & Edge TTS.">
+    <title>🎙️ Doc-to-Podcast — AI-Powered Audio Generation</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="badge">
+                <span class="logo-glow"></span>
+                Instant Audio Overview
+            </div>
+            <h1>Doc-to-Podcast</h1>
+            <p>Convert reports, notes, or books into natural, addictive audio conversations between two AI hosts (Alex & Maya).</p>
+        </header>
+
+        <!-- Main Card Section -->
+        <main>
+            <!-- API Settings Section -->
+            <section id="keys-section" class="card settings-card" style="margin-bottom: 2rem;">
+                <div class="settings-header" id="settings-toggle" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 1.25rem;">🔑</span>
+                        <h2 style="font-size: 1.2rem; margin: 0; color: #ffffff;">API Configuration</h2>
+                    </div>
+                    <span id="settings-toggle-icon" style="font-size: 0.85rem; color: var(--text-secondary); transition: transform 0.3s ease;">▼</span>
+                </div>
+                <div id="settings-content" style="transition: max-height 0.3s ease-in-out, opacity 0.3s ease; overflow: hidden; max-height: 500px; opacity: 1;">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 1rem 0 1.5rem 0; line-height: 1.5;">
+                        To deploy this app publicly or avoid server rate limits, enter your own API keys below. They are saved only in your browser's local storage and sent with your document request.
+                    </p>
+                    <div class="form-group" style="margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label for="gemini-key-input" style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Gemini API Key</label>
+                        <input type="password" id="gemini-key-input" class="text-input" placeholder="AIzaSy..." style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); color: #ffffff; font-family: monospace; font-size: 0.9rem;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Get a free key from <a href="https://aistudio.google.com/" target="_blank" style="color: var(--accent-primary); text-decoration: none; font-weight: 500;">Google AI Studio</a>.</span>
+                    </div>
+                    <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label for="groq-key-input" style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Groq API Key (Optional Fallback)</label>
+                        <input type="password" id="groq-key-input" class="text-input" placeholder="gsk_..." style="width: 100%; padding: 0.8rem 1rem; border-radius: 10px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); color: #ffffff; font-family: monospace; font-size: 0.9rem;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Get a free key from <a href="https://console.groq.com/" target="_blank" style="color: var(--accent-primary); text-decoration: none; font-weight: 500;">Groq Console</a>.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. Upload Section -->
+            <section id="upload-section" class="card">
+                <div class="upload-zone" id="upload-zone">
+                    <input type="file" id="file-input" class="file-input" accept=".pdf,.docx,.doc,.pptx,.txt,.md,.rtf,.csv,.xlsx,.json,.xml,.html,.htm">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Drag & drop your document here</div>
+                    <div class="upload-subtext">Supports PDF, Word, PowerPoint, TXT, MD, HTML (No Size Limit)</div>
+                </div>
+            </section>
+
+            <!-- 2. Progress Tracker Section -->
+            <section id="progress-section" class="card" style="display: none;">
+                <div class="progress-header">
+                    <div class="progress-title">Generating Podcast...</div>
+                    <div class="progress-pct" id="progress-pct">0%</div>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                </div>
+
+                <div style="margin-bottom: 2rem; font-size: 0.95rem; color: var(--text-secondary); text-align: center;">
+                    Current Task: <strong id="progress-step-text" style="color: #ffffff;">Initializing Pipeline</strong>
+                </div>
+
+                <!-- Step-by-Step Agent Activities -->
+                <div class="steps-list">
+                    <!-- Step 1 -->
+                    <div class="step-item" id="step-parsing">
+                        <div class="step-indicator">1</div>
+                        <div class="step-details">
+                            <div class="step-name">Document Parser</div>
+                            <div class="step-description">Extracting clean text and page structures.</div>
+                        </div>
+                        <div class="step-status-icon">✓</div>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="step-item" id="step-analyzing">
+                        <div class="step-indicator">2</div>
+                        <div class="step-details">
+                            <div class="step-name">Content Analyst</div>
+                            <div class="step-description">Extracting key concepts, facts, and analogies.</div>
+                        </div>
+                        <div class="step-status-icon">✓</div>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="step-item" id="step-outlining">
+                        <div class="step-indicator">3</div>
+                        <div class="step-details">
+                            <div class="step-name">Outline Architect</div>
+                            <div class="step-description">Structuring pacing, act durations, and hooks.</div>
+                        </div>
+                        <div class="step-status-icon">✓</div>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="step-item" id="step-writing">
+                        <div class="step-indicator">4</div>
+                        <div class="step-details">
+                            <div class="step-name">Script Writer</div>
+                            <div class="step-description">Drafting interactive dialogue turns for Alex & Maya.</div>
+                        </div>
+                        <div class="step-status-icon">✓</div>
+                    </div>
+                    <!-- Step 5 -->
+                    <div class="step-item" id="step-reviewing">
+                        <div class="step-indicator">5</div>
+                        <div class="step-details">
+                            <div class="step-name">Quality Reviewer</div>
+                            <div class="step-description">Fact-checking statements and validating flow.</div>
+                        </div>
+                        <div class="step-status-icon">✓</div>
+                    </div>
+                    <!-- Step 6 -->
+                    <div class="step-item" id="step-synthesizing">
+                        <div class="step-indicator">6</div>
+                        <div class="step-details">
+                            <div class="step-name">Speech Synthesis</div>
+                            <div class="step-description">Generating neural voice files.</div>
+                        </div>
+                        <div class="step-status-icon">✓</div>
+                    </div>
+                    <!-- Step 7 -->
+                    <div class="step-item" id="step-audio">
+                        <div class="step-indicator">7</div>
+                        <div class="step-details">
+                            <div class="step-name">Audio Processing</div>
+                            <div class="step-description">Stitching segments and applying volume levels.</div>
+                        </div>
+                        <div class="step-status-icon">✓</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Final Player Section -->
+            <section id="player-section" class="card audio-card" style="display: none;">
+                <div class="success-badge">
+                    <span>✨</span> Podcast Created Successfully!
+                </div>
+                <div class="player-artwork">🎙️</div>
+                <h2 class="audio-title" id="audio-title">Your Audio Overview</h2>
+                <div class="audio-subtitle">Alex & Maya dissecting your uploaded document</div>
+                
+                <audio id="audio-player" controls>
+                    <source id="audio-source" src="" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+
+                <div class="player-controls">
+                    <a id="download-btn" class="action-btn" href="#" target="_blank">
+                        <span>📥</span> Download MP3
+                    </a>
+                    <button id="generate-new-btn" class="action-btn alt-btn">
+                        <span>🔄</span> Generate Another
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Built with ❤️ using <a href="https://ai.google.dev" target="_blank">Gemini</a> & <a href="https://github.com/rany2/edge-tts" target="_blank">Edge TTS</a></p>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
